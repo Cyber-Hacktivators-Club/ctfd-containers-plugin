@@ -18,22 +18,20 @@ from CTFd.utils import get_config
 from .models import ContainerChallengeModel, ContainerInfoModel, ContainerSettingsModel
 from .container_manager import ContainerManager, ContainerException
 
-USERS_MODE = "users"
-TEAMS_MODE = "teams"
+def get_settings_path():
+    import os
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings.json")
+
+settings = json.load(open(get_settings_path()))
+
+USERS_MODE = settings["modes"]["USERS_MODE"]
+TEAMS_MODE = settings["modes"]["TEAMS_MODE"]
 
 class ContainerChallenge(BaseChallenge):
-    id = "container"  # Unique identifier used to register challenges
-    name = "container"  # Name of a challenge type
-    templates = {  # Handlebars templates used for each aspect of challenge editing & viewing
-        "create": "/plugins/containers/assets/create.html",
-        "update": "/plugins/containers/assets/update.html",
-        "view": "/plugins/containers/assets/view.html",
-    }
-    scripts = {  # Scripts that are loaded when a template is loaded
-        "create": "/plugins/containers/assets/create.js",
-        "update": "/plugins/containers/assets/update.js",
-        "view": "/plugins/containers/assets/view.js",
-    }
+    id = settings["plugin-info"]["id"]  # Unique identifier used to register challenges
+    name = settings["plugin-info"]["name"]  # Name of a challenge type
+    templates = settings["plugin-info"]["templates"]  # Handlebars templates used for each aspect of challenge editing & viewing
+    scripts = settings["plugin-info"]["scripts"]  # Scripts that are loaded when a template is loaded
     # Route at which files are accessible. This must be registered using register_plugin_assets_directory()
     route = "/plugins/containers/assets/"
 
@@ -360,7 +358,7 @@ def load(app: Flask):
     @authed_only
     @during_ctf_time_only
     @require_verified_emails
-    @ratelimit(method="GET", limit=15, interval=60)
+    @ratelimit(method="GET", limit=settings["requests"]["limit"], interval=settings["requests"]["interval"])
     def get_connect_type(challenge_id):
         try:
             return connect_type(challenge_id)
@@ -371,7 +369,7 @@ def load(app: Flask):
     @authed_only
     @during_ctf_time_only
     @require_verified_emails
-    @ratelimit(method="POST", limit=15, interval=60)
+    @ratelimit(method="POST", limit=settings["requests"]["limit"], interval=settings["requests"]["interval"])
     def route_view_info():
         user = get_current_user()
 
@@ -399,7 +397,7 @@ def load(app: Flask):
     @authed_only
     @during_ctf_time_only
     @require_verified_emails
-    @ratelimit(method="POST", limit=6, interval=60)
+    @ratelimit(method="POST", limit=settings["requests"]["limit"], interval=settings["requests"]["interval"])
     def route_request_container():
         user = get_current_user()
 
@@ -427,7 +425,7 @@ def load(app: Flask):
     @authed_only
     @during_ctf_time_only
     @require_verified_emails
-    @ratelimit(method="POST", limit=6, interval=60)
+    @ratelimit(method="POST", limit=settings["requests"]["limit"], interval=settings["requests"]["interval"])
     def route_renew_container():
         user = get_current_user()
 
@@ -486,7 +484,7 @@ def load(app: Flask):
     @authed_only
     @during_ctf_time_only
     @require_verified_emails
-    @ratelimit(method="POST", limit=10, interval=60)
+    @ratelimit(method="POST", limit=settings["requests"]["limit"], interval=settings["requests"]["interval"])
     def route_stop_container():
         user = get_current_user()
 
