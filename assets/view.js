@@ -82,7 +82,7 @@ function calculateExpiry(date) {
 function createChallengeLinkElement(data, parent) {
 
 	var expires = document.createElement('span');
-	expires.textContent = "Expires in " + calculateExpiry(new Date(data.expires)) + " minutes.";
+	expires.textContent = "PAIN ends in " + calculateExpiry(new Date(data.expires)) + " minutes.";
 
 	parent.append(expires); 
 	parent.append(document.createElement('br'));
@@ -91,7 +91,12 @@ function createChallengeLinkElement(data, parent) {
 		let codeElement = document.createElement('code');
 		codeElement.textContent = 'nc ' + data.hostname + " " + data.port;
 		parent.append(codeElement);
-	} else {
+	} else if(data.connect == "ssh") {
+		let codeElement = document.createElement('code');
+		codeElement.textContent = 'ssh <user>@' + data.hostname + " -p" + data.port;
+		parent.append(codeElement);
+	}
+    else {
 		let link = document.createElement('a');
 		link.href = 'http://' + data.hostname + ":" + data.port;
 		link.textContent = 'http://' + data.hostname + ":" + data.port;
@@ -238,7 +243,7 @@ function container_stop(challenge_id) {
             toggleChallengeCreate();
         } else {
             // Success
-            alert.append("Challenge Terminated.");
+            alert.append("You have beared enough PAIN.");
             toggleChallengeCreate();
             toggleChallengeUpdate();
         }
