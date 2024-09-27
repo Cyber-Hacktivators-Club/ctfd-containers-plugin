@@ -14,6 +14,10 @@ import random
 from CTFd.models import db
 from .models import ContainerInfoModel
 
+
+
+""" To those who will just copy instead of forking, atleast give credits to the author and change your commit messages ;) """
+""" To those who think that we haven't given credits, Please do check the Readme. Also not changing commit messages is also due digilence done from our side above giving credits."""
 class ContainerException(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
