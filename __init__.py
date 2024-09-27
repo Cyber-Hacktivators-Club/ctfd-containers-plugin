@@ -53,6 +53,8 @@ class ContainerChallenge(BaseChallenge):
             "port": challenge.port,
             "command": challenge.command,
             "ctype": challenge.ctype,
+            "ssh_username": challenge.ssh_username,
+            "ssh_password": challenge.ssh_password,
             "initial": challenge.initial,
             "decay": challenge.decay,
             "minimum": challenge.minimum,
@@ -246,6 +248,8 @@ def load(app: Flask):
                         "status": "already_running",
                         "hostname": container_manager.settings.get("docker_hostname", ""),
                         "port": running_container.port,
+                        "ssh_username": running_container.ssh_username,
+                        "ssh_password": running_container.ssh_password,
                         "connect": challenge.ctype,
                         "expires": running_container.expires
                     })
@@ -257,7 +261,6 @@ def load(app: Flask):
             except ContainerException as err:
                 return {"error": str(err)}, 500
 
-        # TODO: Should insert before creating container, then update. That would avoid a TOCTOU issue
 
         # Run a new Docker container
         try:

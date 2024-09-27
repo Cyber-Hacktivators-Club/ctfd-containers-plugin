@@ -164,3 +164,7 @@ Phan Nhat - @Discord ftpotato - contact@phannhat.id.vn
 Project Link: [https://github.com/phannhat17/CTFd-Docker-Plugin](https://github.com/phannhat17/CTFd-Docker-Plugin)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+## Credits
+Thanks again [TheFlash2k](https://github.com/TheFlash2k) for updating this plugin!

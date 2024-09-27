@@ -8,10 +8,11 @@ from apscheduler.schedulers import SchedulerNotRunningError
 import docker
 import paramiko.ssh_exception
 import requests
+import socket
+import random
 
 from CTFd.models import db
 from .models import ContainerInfoModel
-
 
 class ContainerException(Exception):
     def __init__(self, *args: object) -> None:
@@ -42,6 +43,17 @@ class ContainerManager:
         except ContainerException:
             print("Docker could not initialize or connect.")
             return
+
+    def __check_port__(self, port: int) -> bool:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.settimeout(1)
+        try:
+            s.bind(("0.0.0.0", port))
+            s.close()
+            return True
+        except Exception as e: pass
+        return False
 
     def initialize_connection(self, settings, app) -> None:
         self.settings = settings
@@ -172,11 +184,15 @@ class ContainerManager:
                 kwargs["volumes"] = volumes_dict
             except json.decoder.JSONDecodeError:
                 raise ContainerException("Volumes JSON string is invalid")
+        
+        external_port = port
+        while not self.__check_port__(external_port):
+            external_port = random.randint(port, 65535)
 
         try:
             return self.client.containers.run(
                 image,
-                ports={str(port): None},
+                ports={str(port): str(external_port)},
                 command=command,
                 detach=True,
                 auto_remove=True,
